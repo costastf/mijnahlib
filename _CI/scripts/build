@@ -1,0 +1,26 @@
+#!/bin/bash --login
+set -e
+cd $(dirname $0)/../..
+
+. _CI/scripts/bootstrap
+
+rm -rf build dist
+
+# we want all these files to exist in the actual package
+cp .VERSION mijnahlib/.VERSION
+cp LICENSE mijnahlib/LICENSE
+cp AUTHORS.rst mijnahlib/AUTHORS.rst
+cp CONTRIBUTING.rst mijnahlib/CONTRIBUTING.rst
+cp HISTORY.rst mijnahlib/HISTORY.rst
+cp README.rst mijnahlib/README.rst
+cp USAGE.rst mijnahlib/USAGE.rst
+
+python setup.py sdist bdist_egg
+
+rm mijnahlib/.VERSION
+rm mijnahlib/LICENSE
+rm mijnahlib/AUTHORS.rst
+rm mijnahlib/CONTRIBUTING.rst
+rm mijnahlib/HISTORY.rst
+rm mijnahlib/README.rst
+rm mijnahlib/USAGE.rst
