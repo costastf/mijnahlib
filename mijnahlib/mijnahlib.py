@@ -32,6 +32,7 @@ class Server(object):
         self._session = Session()
         self._url = 'https://www.ah.nl'
         self._authenticate()
+        self.shopping_cart = ShoppingCart(self)
 
     def _authenticate(self):
         data = {'userName': self.username,
@@ -54,3 +55,30 @@ class Server(object):
                                                 redirect=redirect)
         self._session.get(success_url)
         return True
+
+
+class ShoppingCart(object):
+    def __init__(self, ah_instance):
+        self._ah = ah_instance
+        self._url = ('{base}/service/rest/shoppinglists/0/'
+                     'items').format(base=self._ah._url)
+
+    def add_item_by_id(self, item_id, quantity=1):
+        data = {'type': 'PRODUCT',
+                'item': {'id': item_id},
+                'quantity': int(quantity)}
+        response = self._ah._session.post(self._url, json=data)
+        if response.ok:
+            return True
+        else:
+            return False
+
+    @property
+    def contents(self):
+        url = ('{base}/service/rest/delegate'
+               '?url=%2Fmijnlijst').format(base=self._ah._url)
+        response = self._ah._session.get(url)
+        data = response.json()
+        items_lane = next((lane for lane in data['_embedded']['lanes']
+                           if lane['type'] == 'ShoppingListLane'), None)
+        return items_lane['_embedded']['items']
