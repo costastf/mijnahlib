@@ -77,10 +77,7 @@ class ShoppingCart(object):
                 'item': {item_type: item_info},
                 'quantity': int(quantity)}
         response = self._ah._session.post(self._url, json=data)
-        if response.ok:
-            return True
-        else:
-            return False
+        return response.ok
 
     @property
     def contents(self):
