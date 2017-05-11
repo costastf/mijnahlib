@@ -64,8 +64,17 @@ class ShoppingCart(object):
                      'items').format(base=self._ah._url)
 
     def add_item_by_id(self, item_id, quantity=1):
-        data = {'type': 'PRODUCT',
-                'item': {'id': item_id},
+        return self._add_item('PRODUCT', 'id', item_id, quantity)
+
+    def add_item_by_description(self, description, quantity=1):
+        return self._add_item('UNSPECIFIED',
+                              'description',
+                              description,
+                              quantity)
+
+    def _add_item(self, submission_type, item_type, item_info, quantity):
+        data = {'type': submission_type,
+                'item': {item_type: item_info},
                 'quantity': int(quantity)}
         response = self._ah._session.post(self._url, json=data)
         if response.ok:
