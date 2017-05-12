@@ -27,7 +27,7 @@ To use mijnahlib in a project:
         print(item.description)
         print(item.measurement_unit)
         print(item.price)
-        print(item.quality)
+        print(item.quantity)
         print(item.has_discount)
         print(item.brand)
         print(item.category)

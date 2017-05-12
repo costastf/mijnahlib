@@ -41,7 +41,8 @@ class Server(object):
         self.url = 'https://www.ah.nl'
         self._authenticate()
         self.shopping_cart = ShoppingCart(self)
-        self._shops = None
+        self._stores = None
+        self._services = None
 
     def _authenticate(self):
         data = {'userName': self.username,
@@ -65,57 +66,95 @@ class Server(object):
         self.session.get(success_url)
         return True
 
+    # @property
+    # def shops(self):
+    #     if not self._shops:
+    #         url = ('{base}/data/winkelinformatie/winkels/'
+    #                'lijst').format(base=self.url)
+    #         response = self.session.get(url)
+    #         data = Bfs(response.text, 'html.parser')
+    #         self._shops = [Shop(info) for info in data.find_all('tr')]
+    #     return self._shops
+
     @property
-    def shops(self):
-        if not self._shops:
+    def stores(self):
+        if not self._stores:
             url = ('{base}/data/winkelinformatie/winkels/'
-                   'lijst').format(base=self.url)
+                   'json').format(base=self.url)
             response = self.session.get(url)
-            data = Bfs(response.text, 'html.parser')
-            self._shops = [Shop(info) for info in data.find_all('tr')]
-        return self._shops
+            data = response.json()
+            # self._services = [Service(values)
+            #                   for name, values in data.get('services').items()]
+            self._stores = [Store(info) for info in data.get('stores')]
+        return self._stores
 
 
-class Shop(object):
+class Service(object):
+    def __init__(self):
+        pass
+
+# https://www.ah.nl/data/winkelinformatie/winkels/json
+
+
+class Store(object):
     def __init__(self, info):
         self._info = info
 
     @property
     def _format(self):
-        return self._info.attrs.get('data-format')
+        return self._info.get('format')
+
+    @property
+    def city(self):
+        return self._info.get('city')
+
+    @property
+    def street(self):
+        return self._info.get('street')
+
+    @property
+    def street_number(self):
+        return self._info.get('housenr')
+
+    @property
+    def zip_code(self):
+        return self._info.get('zip')
 
     @property
     def address(self):
-        return self._info.find('th',
-                               {'class': 'format-{}'.format(self._format)}).text
+        _address = u'{street} {nr} {zip} {city}'.format(street=self.street,
+                                                        nr=self.street_number,
+                                                        zip=self.zip_code,
+                                                        city=self.city)
+        return _address
 
     @property
     def telephone(self):
-        return self._info.find('td', {'class': 'tel'}).text
+        return self._info.get('phoneNumber')
 
     @property
     def opening_times_today(self):
-        return self._info.find('td', {'class': 'time'}).p.text
+        return self._info.get('status')
 
     @property
     def latitude(self):
-        return self._info.attrs.get('data-lat')
+        return self._info.get('lat')
 
     @property
     def longtitude(self):
-        return self._info.attrs.get('data-lon')
+        return self._info.get('lng')
 
     @property
     def opens_sunday(self):
-        return True if self._info.attrs.get('data-sunday') else False
+        return True if self._info.get('sunday') else False
 
     @property
     def opens_evenings(self):
-        return True if self._info.attrs.get('data-evening') else False
+        return True if self._info.get('openEvening') else False
 
     @property
     def id(self):
-        return self._info.attrs.get('id')
+        return self._info.get('no')
 
 
 class ShoppingCart(object):
