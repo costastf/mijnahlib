@@ -37,13 +37,13 @@ To use mijnahlib in a project:
     # get a list of items with discount
     discounted_items = ah.shopping_cart.get_items_with_discount()
 
-    # get info over the shops
-    for shop in ah.shops:
-        print(shop.address)
-        print(shop.telephone)
-        print(shop.id)
-        print(shop.latitude)
-        print(shop.longtitude)
-        print(shop.opening_times_today)
-        print(shop.opens_sunday)
-        print(shop.opens_evenings)
+    # get info over the stores
+    for store in ah.stores:
+        print(store.address)
+        print(store.telephone)
+        print(store.id)
+        print(store.latitude)
+        print(store.longtitude)
+        print(store.opening_times_today)
+        print(store.opens_sunday)
+        print(store.opens_evenings)
