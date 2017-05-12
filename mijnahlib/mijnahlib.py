@@ -105,7 +105,6 @@ class ShoppingCart(object):
 
 class ItemFactory(object):
     def __new__(cls, ah_instance, info):
-        print info
         product_type = info.get('type').lower()
         if product_type == 'product':
             return Product(ah_instance, info)
