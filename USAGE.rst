@@ -32,3 +32,6 @@ To use mijnahlib in a project:
         print item.category
         print item.price_previously
         print item.id
+
+    # get a list of items with discount
+    discounted_items = ah.shopping_cart.get_items_with_discount()
