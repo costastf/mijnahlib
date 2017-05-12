@@ -66,16 +66,6 @@ class Server(object):
         self.session.get(success_url)
         return True
 
-    # @property
-    # def shops(self):
-    #     if not self._shops:
-    #         url = ('{base}/data/winkelinformatie/winkels/'
-    #                'lijst').format(base=self.url)
-    #         response = self.session.get(url)
-    #         data = Bfs(response.text, 'html.parser')
-    #         self._shops = [Shop(info) for info in data.find_all('tr')]
-    #     return self._shops
-
     @property
     def stores(self):
         if not self._stores:
@@ -89,11 +79,10 @@ class Server(object):
         return self._stores
 
 
+#TODO implement the service and bind it with store object.
 class Service(object):
     def __init__(self):
         pass
-
-# https://www.ah.nl/data/winkelinformatie/winkels/json
 
 
 class Store(object):
@@ -122,11 +111,10 @@ class Store(object):
 
     @property
     def address(self):
-        _address = u'{street} {nr} {zip} {city}'.format(street=self.street,
-                                                        nr=self.street_number,
-                                                        zip=self.zip_code,
-                                                        city=self.city)
-        return _address
+        return u'{street} {nr} {zip} {city}'.format(street=self.street,
+                                                    nr=self.street_number,
+                                                    zip=self.zip_code,
+                                                    city=self.city)
 
     @property
     def telephone(self):
