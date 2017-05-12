@@ -41,6 +41,7 @@ class Server(object):
         self.url = 'https://www.ah.nl'
         self._authenticate()
         self.shopping_cart = ShoppingCart(self)
+        self._shops = None
 
     def _authenticate(self):
         data = {'userName': self.username,
@@ -63,6 +64,58 @@ class Server(object):
                                                 redirect=redirect)
         self.session.get(success_url)
         return True
+
+    @property
+    def shops(self):
+        if not self._shops:
+            url = ('{base}/data/winkelinformatie/winkels/'
+                   'lijst').format(base=self.url)
+            response = self.session.get(url)
+            data = Bfs(response.text, 'html.parser')
+            self._shops = [Shop(info) for info in data.find_all('tr')]
+        return self._shops
+
+
+class Shop(object):
+    def __init__(self, info):
+        self._info = info
+
+    @property
+    def _format(self):
+        return self._info.attrs.get('data-format')
+
+    @property
+    def address(self):
+        return self._info.find('th',
+                               {'class': 'format-{}'.format(self._format)}).text
+
+    @property
+    def telephone(self):
+        return self._info.find('td', {'class': 'tel'}).text
+
+    @property
+    def opening_times_today(self):
+        return self._info.find('td', {'class': 'time'}).p.text
+
+    @property
+    def latitude(self):
+        return self._info.attrs.get('data-lat')
+
+    @property
+    def longtitude(self):
+        return self._info.attrs.get('data-lon')
+
+    @property
+    def opens_sunday(self):
+        return True if self._info.attrs.get('data-sunday') else False
+
+    @property
+    def opens_evenings(self):
+        return True if self._info.attrs.get('data-evening') else False
+
+    @property
+    def id(self):
+        return self._info.attrs.get('id')
 
 
 class ShoppingCart(object):
