@@ -24,14 +24,15 @@ To use mijnahlib in a project:
     # they can be used like the Product items.
     # show internal attributes of items in the cart
     for item in ah.shopping_cart.contents:
-        print item.description
-        print item.measurement_unit
-        print item.price
-        print item.has_discount
-        print item.brand
-        print item.category
-        print item.price_previously
-        print item.id
+        print(item.description)
+        print(item.measurement_unit)
+        print(item.price)
+        print(item.quality)
+        print(item.has_discount)
+        print(item.brand)
+        print(item.category)
+        print(item.price_previously)
+        print(item.id)
 
     # get a list of items with discount
     discounted_items = ah.shopping_cart.get_items_with_discount()

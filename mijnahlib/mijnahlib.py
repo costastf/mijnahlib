@@ -216,6 +216,15 @@ class Item(object):
         _url = self._info.get('navItem', {}).get('link', {}).get('href', {})
         return self._ah.url + _url
 
+    @property
+    def quantity(self):
+        """The quantity of the items in the shopping cart
+
+        :return: The quantity of the items
+        """
+        return self._info.get('_embedded',
+                              {}).get('listItem', {}).get('quantity')
+
 
 class UnspecifiedProduct(Item):
     """An object to model the unspecified products"""
