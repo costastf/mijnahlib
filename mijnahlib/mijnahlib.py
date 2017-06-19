@@ -11,7 +11,9 @@ import logging
 from requests import Session
 from bs4 import BeautifulSoup as Bfs
 
-from .mijnahlibexceptions import InvalidCredentials, UnknownServerError
+from .mijnahlibexceptions import (InvalidCredentials,
+                                  UnknownServerError,
+                                  NoAuthRedirect)
 
 __author__ = '''Costas Tyfoxylos <costas.tyf@gmail.com>'''
 __docformat__ = 'plaintext'
@@ -59,12 +61,17 @@ class Server(object):
         if LOGIN_ERROR_MESSAGE in response.text:
             error = soup.find('div', {'class': 'error_notices'}).text
             raise InvalidCredentials(error)
-        # we try to get the redirect we are provided with in the meta tag
-        redirect = soup.find('meta').attrs['content'].split('=')[1]
-        success_url = '{base}{redirect}'.format(base=self.url,
-                                                redirect=redirect)
-        self.session.get(success_url)
-        return True
+        # we try to get the redirect we are provided with the history headers
+        try:
+            redirect = response.history[0].headers.get('location')
+            if not redirect:
+                raise NoAuthRedirect
+            success_url = '{base}{redirect}'.format(base=self.url,
+                                                    redirect=redirect)
+            self.session.get(success_url)
+            return True
+        except IndexError:
+            raise NoAuthRedirect
 
     @property
     def stores(self):
@@ -74,12 +81,13 @@ class Server(object):
             response = self.session.get(url)
             data = response.json()
             # self._services = [Service(values)
-            #                   for name, values in data.get('services').items()]
+            #                   for name, values in data.get('services').items()
+            #                   ]
             self._stores = [Store(info) for info in data.get('stores')]
         return self._stores
 
 
-#TODO implement the service and bind it with store object.
+# TODO implement the service and bind it with store object.
 class Service(object):
     def __init__(self):
         pass

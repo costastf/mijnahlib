@@ -19,3 +19,7 @@ class UnknownServerError(Exception):
 
 class InvalidCredentials(Exception):
     """Username and password combination is invalid"""
+
+
+class NoAuthRedirect(Exception):
+    """There is no authenticated redirection provided"""
